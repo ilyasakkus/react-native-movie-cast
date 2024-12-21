@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, ImageBackground } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, ImageBackground, Image } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
@@ -16,6 +16,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
       blurRadius={3}
     >
       <View style={styles.container}>
+        <Image source={require('../assets/logo.jpg')} style={styles.logo} />
         <Text style={styles.title}>AI Movie Cast</Text>
         <Text style={styles.subtitle}>Create Your Dream Movie Cast</Text>
         
@@ -42,6 +43,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 20,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
   },
   title: {
     fontSize: 36,
