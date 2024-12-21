@@ -3,14 +3,15 @@ import { View, StyleSheet, TouchableOpacity, Text, ImageBackground } from 'react
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
-type HomeScreenProps = {
+// Define the props for the HomeScreen
+interface HomeScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
-};
+}
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   return (
     <ImageBackground
-      source={require('../assets/background.jpg')}
+      source={require('../assets/background.jpg')} // Placeholder background image
       style={styles.background}
       blurRadius={3}
     >
