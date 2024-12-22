@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Text,
   SafeAreaView,
+  TextInput,
+  ScrollView,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -15,16 +17,21 @@ type CastingScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Casting'>;
 };
 
-// Temporary mock data - this will be replaced with actual API data
+const categories = ['All', 'Hollywood', 'Bollywood', 'European', 'Asian', 'Turkish'];
+
 const mockActors = [
-  { id: '1', name: 'Actor 1', image: 'https://via.placeholder.com/150' },
-  { id: '2', name: 'Actor 2', image: 'https://via.placeholder.com/150' },
-  { id: '3', name: 'Actor 3', image: 'https://via.placeholder.com/150' },
-  // Add more mock actors here
+  { id: '1', name: 'Tom Cruise', category: 'Hollywood', image: 'https://via.placeholder.com/150' },
+  { id: '2', name: 'Shah Rukh Khan', category: 'Bollywood', image: 'https://via.placeholder.com/150' },
+  { id: '3', name: 'Marion Cotillard', category: 'European', image: 'https://via.placeholder.com/150' },
+  { id: '4', name: 'Actor 1', category: 'Hollywood', image: 'https://via.placeholder.com/150' },
+  { id: '5', name: 'Actor 2', category: 'Bollywood', image: 'https://via.placeholder.com/150' },
+  { id: '6', name: 'Actor 3', category: 'European', image: 'https://via.placeholder.com/150' },
 ];
 
 const CastingScreen = ({ navigation }: CastingScreenProps) => {
   const [selectedActors, setSelectedActors] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const toggleActorSelection = (actorId: string) => {
     setSelectedActors(prev => 
@@ -34,24 +41,46 @@ const CastingScreen = ({ navigation }: CastingScreenProps) => {
     );
   };
 
-  const renderActorItem = ({ item }: { item: typeof mockActors[0] }) => (
-    <TouchableOpacity
-      style={[
-        styles.actorCard,
-        selectedActors.includes(item.id) && styles.selectedCard
-      ]}
-      onPress={() => toggleActorSelection(item.id)}
-    >
-      <Image source={{ uri: item.image }} style={styles.actorImage} />
-      <Text style={styles.actorName}>{item.name}</Text>
-    </TouchableOpacity>
-  );
+  const filteredActors = mockActors.filter(actor => {
+    const matchesSearch = actor.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || actor.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <SafeAreaView style={styles.container}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search actors..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
+        {categories.map(category => (
+          <TouchableOpacity
+            key={category}
+            style={[styles.categoryButton, selectedCategory === category && styles.selectedCategory]}
+            onPress={() => setSelectedCategory(category)}
+          >
+            <Text style={[styles.categoryText, selectedCategory === category && styles.selectedCategoryText]}>
+              {category}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
       <FlatList
-        data={mockActors}
-        renderItem={renderActorItem}
+        data={filteredActors}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.actorCard, selectedActors.includes(item.id) && styles.selectedCard]}
+            onPress={() => toggleActorSelection(item.id)}
+          >
+            <Image source={{ uri: item.image }} style={styles.actorImage} />
+            <Text style={styles.actorName}>{item.name}</Text>
+          </TouchableOpacity>
+        )}
         keyExtractor={item => item.id}
         numColumns={2}
         contentContainerStyle={styles.listContainer}
@@ -82,9 +111,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f6fa',
-  },
-  listContainer: {
     padding: 10,
+  },
+  searchInput: {
+    backgroundColor: '#ffffff',
+    padding: 12,
+    borderRadius: 25,
+    marginBottom: 10,
+  },
+  categoriesContainer: {
+    marginBottom: 10,
+  },
+  categoryButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    marginRight: 10,
+    borderRadius: 20,
+    backgroundColor: '#ffffff',
+  },
+  selectedCategory: {
+    backgroundColor: '#e74c3c',
+  },
+  categoryText: {
+    color: '#34495e',
+  },
+  selectedCategoryText: {
+    color: '#ffffff',
   },
   actorCard: {
     flex: 1,
@@ -115,13 +167,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
+  listContainer: {
+    padding: 10,
+  },
   buttonContainer: {
-    padding: 15,
     flexDirection: 'row',
     justifyContent: 'space-around',
+    padding: 15,
   },
   button: {
-    backgroundColor: '#2ecc71',
+    backgroundColor: '#e74c3c',
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 25,
@@ -133,7 +188,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#ffffff',
-    fontSize: 16,
     fontWeight: 'bold',
   },
 });
